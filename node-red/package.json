@@ -1,0 +1,13 @@
+{
+  "name": "ifaci-node-red",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Workspace local do Node-RED para o projeto IFACI",
+  "scripts": {
+    "start": "node-red --settings settings.js"
+  },
+  "dependencies": {
+    "node-red": "^4.0.9",
+    "node-red-contrib-opcua": "^0.2.342"
+  }
+}

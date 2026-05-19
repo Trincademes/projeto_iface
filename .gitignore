@@ -3,6 +3,8 @@ node_modules/
 .npm-cache/
 .DS_Store
 *.DS_Store
+.sessions.json
+.config.*.json
 __pycache__/
 *.pyc
 *.pyo
@@ -10,5 +12,12 @@ __pycache__/
 frontend/my-app/.next/
 frontend/my-app/.npm-cache/
 frontend/my-app/node_modules/
+node-red/node_modules/
+node-red/.npm/
+node-red/.appdata/
+node-red/lib/
+node-red/.sessions.json
+node-red/.config.*.json
+node-red/*.backup
 opcua-server/__pycache__/
 opcua-server/*.log

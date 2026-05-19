@@ -1,33 +1,23 @@
 # IFACI - Supervisao Industrial Web
 
-Projeto academico de supervisao industrial para monitorar uma bancada OPC UA por uma interface web.
+Projeto academico para monitorar uma bancada OPC UA por uma interface web.
 
-Esta versao do repositorio foi enxugada para manter apenas o que entra no fluxo principal de execucao:
+O caminho recomendado de execucao deste repositorio usa:
 
-- `frontend` em Next.js
-- `backend` em Express
-- `simulador OPC UA` em Python
-- `bridge` em Python para publicar leituras no backend
+- simulador OPC UA em Python
+- backend em Express
+- Node-RED para ler OPC UA e enviar dados ao backend
+- frontend em Next.js
 
-## O que o projeto faz
+## Visao geral
 
-O sistema simula uma bancada industrial e mostra os dados em um painel web em tempo real.
-
-As leituras monitoradas sao:
-
-- temperatura
-- pressao
-- umidade
-- status de operacao
-- trava de seguranca
-
-## Arquitetura
+Fluxo principal:
 
 ```text
 OPC UA server (Python)
         |
         v
-bridge.py
+Node-RED
         |
         v
 Backend Express
@@ -36,33 +26,35 @@ Backend Express
 Frontend Next.js
 ```
 
-## Tecnologias usadas
+O frontend mostra:
 
-- `Next.js 16`
-- `React 19`
-- `Express`
-- `Python 3`
-- `OPC UA`
-
-## Estrutura do projeto
-
-```text
-ifaci/
-|-- frontend/my-app/         # painel web
-|-- opcua-server/server.py   # simulador OPC UA
-|-- opcua-server/bridge.py   # ponte OPC UA -> backend
-|-- server.js                # API backend
-|-- package.json             # dependencias do backend
-|-- README.md
-```
+- temperatura
+- pressao
+- umidade
+- status de operacao
+- trava de seguranca
 
 ## Portas
 
 - Frontend: `http://127.0.0.1:3000`
 - Backend: `http://127.0.0.1:8080`
 - Health check: `http://127.0.0.1:8080/health`
-- Lista de dispositivos: `http://127.0.0.1:8080/devices`
+- Dispositivos: `http://127.0.0.1:8080/devices`
+- Node-RED: `http://127.0.0.1:1880`
 - OPC UA: `opc.tcp://127.0.0.1:4840`
+
+## Estrutura
+
+```text
+ifaci/
+|-- frontend/my-app/         # painel web
+|-- node-red/                # fluxo local do Node-RED
+|-- opcua-server/server.py   # simulador OPC UA
+|-- opcua-server/bridge.py   # alternativa ao Node-RED
+|-- server.js                # backend
+|-- package.json
+|-- README.md
+```
 
 ## Pre-requisitos
 
@@ -73,22 +65,17 @@ Instale antes de rodar:
 3. `Python` 3.10 ou superior
 4. pacote Python `opcua`
 
-Instalacao do pacote Python:
+Instale o pacote Python:
 
 ```bash
 pip install opcua
 ```
 
-## Passo a passo para rodar
+Se estiver no PowerShell do Windows e `npm` falhar por politica de execucao, use `npm.cmd`.
 
-### 1. Clonar o repositorio
+## Instalacao
 
-```bash
-git clone <URL_DO_REPOSITORIO>
-cd ifaci
-```
-
-### 2. Instalar as dependencias do backend
+### 1. Backend
 
 Na raiz do projeto:
 
@@ -96,99 +83,168 @@ Na raiz do projeto:
 npm install
 ```
 
-### 3. Instalar as dependencias do frontend
+### 2. Node-RED
+
+Na pasta `node-red`:
+
+```bash
+cd node-red
+npm install
+cd ..
+```
+
+### 3. Frontend
+
+Na pasta `frontend/my-app`:
 
 ```bash
 cd frontend/my-app
 npm install
+cd ../..
 ```
 
-### 4. Iniciar o servidor OPC UA
+## Como rodar
 
-Terminal 1:
+Abra 4 terminais.
+
+### Terminal 1 - OPC UA server
 
 ```bash
 cd opcua-server
 python server.py
 ```
 
-### 5. Iniciar o backend
+### Terminal 2 - Backend
 
-Terminal 2, na raiz do projeto:
+Na raiz do projeto:
 
 ```bash
 npm start
 ```
 
-### 6. Iniciar a bridge
-
-Terminal 3:
+### Terminal 3 - Node-RED
 
 ```bash
-cd opcua-server
-python bridge.py
+cd node-red
+npm start
 ```
 
-### 7. Iniciar o frontend
+Abra depois:
 
-Terminal 4:
+```text
+http://127.0.0.1:1880
+```
+
+### Terminal 4 - Frontend
 
 ```bash
 cd frontend/my-app
 npm run dev
 ```
 
-Abra no navegador:
+Abra depois:
 
 ```text
 http://127.0.0.1:3000
 ```
 
-## Ordem recomendada
+## Ordem correta
+
+Suba exatamente nesta ordem:
 
 1. `python opcua-server/server.py`
-2. `npm start`
-3. `python opcua-server/bridge.py`
-4. `cd frontend/my-app && npm run dev`
+2. `npm start` na raiz
+3. `npm start` em `node-red`
+4. `npm run dev` em `frontend/my-app`
 
 ## Como validar
 
-1. Abra `http://127.0.0.1:3000`
-2. Confirme se existe pelo menos `1` dispositivo
-3. Veja se temperatura, pressao e umidade mudam com o tempo
-4. Abra `http://127.0.0.1:8080/health`
-5. Abra `http://127.0.0.1:8080/devices`
+Depois de subir tudo:
 
-## Rotas principais do backend
+1. Abra `http://127.0.0.1:8080/health`
+2. Confirme que o backend responde com `status: ok`
+3. Abra `http://127.0.0.1:8080/devices`
+4. Confirme que existe pelo menos 1 dispositivo
+5. Abra `http://127.0.0.1:3000`
+6. Veja se temperatura, pressao e umidade mudam com o tempo
+7. Abra `http://127.0.0.1:1880` e confirme que o fluxo do Node-RED esta ativo
 
-- `GET /health`
-- `GET /devices`
-- `GET /devices/:deviceId`
-- `POST /iot`
-- `POST /devices`
-- `DELETE /destroy`
-- `DELETE /destroy/:deviceId`
+## Importante
 
-## Variaveis de ambiente
+- Use `Node-RED` ou `bridge.py`, nunca os dois ao mesmo tempo
+- O fluxo do Node-RED ja esta salvo em `node-red/file.json`
+- O backend recebe leituras em `POST /iot`
+- O frontend consulta os dispositivos em `GET /devices`
 
-### Backend
+## Alternativa sem Node-RED
 
-- `PORT`: porta da API. Padrao `8080`
-- `DEVICE_STALE_MS`: timeout para offline. Padrao `10000`
-- `ALLOW_DEVICE_RESET`: habilita limpeza. Padrao `false`
+Se quiser rodar sem Node-RED, use a `bridge.py`.
 
-### Frontend
+Ordem:
 
-- `NEXT_PUBLIC_API_BASE_URL`: URL da API. Padrao `http://127.0.0.1:8080`
-- `NEXT_PUBLIC_POLL_INTERVAL_MS`: polling da UI. Padrao `2000`
-- `NEXT_PUBLIC_DEVICE_STALE_MS`: timeout visual. Padrao `10000`
-- `NEXT_PUBLIC_ALLOW_DEVICE_RESET`: mostra botao de limpeza. Padrao `false`
+1. `python opcua-server/server.py`
+2. `npm start` na raiz
+3. `python opcua-server/bridge.py`
+4. `npm run dev` em `frontend/my-app`
+
+Nesse modo, nao rode o Node-RED.
+
+## Problemas comuns
+
+### `npm` nao funciona no PowerShell
+
+Use:
+
+```bash
+npm.cmd install
+npm.cmd start
+npm.cmd run dev
+```
+
+### Porta 3000 ocupada
+
+O Next.js pode iniciar em outra porta automaticamente. Veja a porta mostrada no terminal.
+
+### Porta 8080 ocupada
+
+Defina outra porta antes de iniciar o backend:
+
+```bash
+set PORT=18080
+npm start
+```
+
+No PowerShell:
+
+```powershell
+$env:PORT="18080"
+npm start
+```
+
+### Frontend sem dados
+
+Confira se estes 3 servicos estao ativos:
+
+1. `python opcua-server/server.py`
+2. `npm start` na raiz
+3. `npm start` em `node-red`
+
+### Backend online, mas sem dispositivos
+
+Normalmente isso significa que o Node-RED nao conseguiu ler o OPC UA ou nao conseguiu enviar para o backend.
 
 ## Comandos uteis
 
 Backend:
 
 ```bash
+npm start
+```
+
+Node-RED:
+
+```bash
+cd node-red
 npm start
 ```
 
@@ -207,45 +263,4 @@ Python:
 cd opcua-server
 python server.py
 python bridge.py
-```
-
-## Problemas comuns
-
-### Porta 3000 ocupada
-
-O Next.js pode subir em outra porta automaticamente.
-
-### Porta 8080 ocupada
-
-Defina a variavel `PORT` antes de iniciar o backend.
-
-### Frontend sem dados
-
-Verifique se estes tres servicos estao rodando:
-
-1. `python opcua-server/server.py`
-2. `npm start`
-3. `python opcua-server/bridge.py`
-
-### Backend online, mas sem dispositivos
-
-Isso normalmente significa que a `bridge.py` nao conseguiu publicar leituras.
-
-## Resumo rapido
-
-```bash
-# terminal 1
-cd opcua-server
-python server.py
-
-# terminal 2
-npm start
-
-# terminal 3
-cd opcua-server
-python bridge.py
-
-# terminal 4
-cd frontend/my-app
-npm run dev
 ```
