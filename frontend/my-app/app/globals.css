@@ -1,26 +1,50 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #08111f;
+  --foreground: #edf4ff;
+  --font-sans:
+    "Aptos", "Segoe UI", "IBM Plex Sans", "Trebuchet MS", "Helvetica Neue", Arial, sans-serif;
+  --font-mono:
+    "Consolas", "IBM Plex Mono", "SFMono-Regular", "Courier New", monospace;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #08111f;
+    --foreground: #edf4ff;
   }
 }
 
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
 body {
+  min-height: 100vh;
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+  background-image:
+    radial-gradient(circle at top left, rgba(18, 177, 198, 0.22), transparent 32%),
+    radial-gradient(circle at 85% 15%, rgba(245, 158, 11, 0.2), transparent 22%),
+    radial-gradient(circle at 50% 100%, rgba(14, 165, 233, 0.12), transparent 30%),
+    linear-gradient(180deg, #08111f 0%, #0f1a2b 48%, #07101d 100%);
+  background-attachment: fixed;
+}
+
+::selection {
+  background: rgba(34, 211, 238, 0.3);
+  color: #f8fafc;
 }

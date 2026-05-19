@@ -1,315 +1,251 @@
-# 📘 Plano de Ensino - Interfaces Industriais  
-Carga horária: 80 horas (20 aulas semanais – 4h por aula)  
-Modalidade: Presencial / Laboratório  
-Professor: Gabriel Claro  
+# IFACI - Supervisao Industrial Web
 
----
+Projeto academico de supervisao industrial para monitorar uma bancada OPC UA por uma interface web.
 
-## 🎯 Objetivo Geral da Disciplina
+Esta versao do repositorio foi enxugada para manter apenas o que entra no fluxo principal de execucao:
 
-Capacitar o aluno a projetar e implementar um sistema supervisório Web aplicado a ambientes industriais, integrando controladores lógicos programáveis via OPC-UA, utilizando middleware, backend e front-end Web, com foco em arquitetura de sistemas, comunicação industrial, alarmística, históricos e desenvolvimento de interfaces IHM de alta performance.
+- `frontend` em Next.js
+- `backend` em Express
+- `simulador OPC UA` em Python
+- `bridge` em Python para publicar leituras no backend
 
----
+## O que o projeto faz
 
-## 🧠 Competências Desenvolvidas
+O sistema simula uma bancada industrial e mostra os dados em um painel web em tempo real.
 
-Ao final da disciplina, o aluno será capaz de:
+As leituras monitoradas sao:
 
-- Projetar arquiteturas de sistemas supervisórios baseados em Web  
-- Integrar sistemas industriais via OPC-UA e middleware  
-- Implementar backend para aquisição, tratamento e armazenamento de dados industriais  
-- Desenvolver aplicações Web para supervisão em tempo real  
-- Implementar alarmes, históricos e gráficos de tendência  
-- Projetar interfaces IHM seguindo princípios da norma ISA-101  
+- temperatura
+- pressao
+- umidade
+- status de operacao
+- trava de seguranca
 
----
+## Arquitetura
 
-## 🗂️ Organização Geral do Semestre
+```text
+OPC UA server (Python)
+        |
+        v
+bridge.py
+        |
+        v
+Backend Express
+        |
+        v
+Frontend Next.js
+```
 
-O semestre está dividido em 4 grandes módulos:
+## Tecnologias usadas
 
-1. **Fundamentos Avançados de Desenvolvimento Web Aplicado (Aulas 1–4)**  
-2. **Arquitetura de Sistemas Supervisórios e Comunicação Industrial (Aulas 5–9)**  
-3. **Backend, Middleware, Alarmes e Históricos (Aulas 10–14)**  
-4. **Interfaces IHM e Sistemas Supervisórios (Aulas 15–20)**  
+- `Next.js 16`
+- `React 19`
+- `Express`
+- `Python 3`
+- `OPC UA`
 
----
+## Estrutura do projeto
 
-## 📅 Cronograma Detalhado das Aulas
+```text
+ifaci/
+|-- frontend/my-app/         # painel web
+|-- opcua-server/server.py   # simulador OPC UA
+|-- opcua-server/bridge.py   # ponte OPC UA -> backend
+|-- server.js                # API backend
+|-- package.json             # dependencias do backend
+|-- README.md
+```
 
----
+## Portas
 
-### 🔹 MÓDULO 1 – Desenvolvimento Web Aplicado a Sistemas Supervisórios (Aulas 1 a 4)
+- Frontend: `http://127.0.0.1:3000`
+- Backend: `http://127.0.0.1:8080`
+- Health check: `http://127.0.0.1:8080/health`
+- Lista de dispositivos: `http://127.0.0.1:8080/devices`
+- OPC UA: `opc.tcp://127.0.0.1:4840`
 
-> Revisão em nível intermediário/avançado focada em aplicações industriais (não introdutório)
+## Pre-requisitos
 
----
+Instale antes de rodar:
 
-### 📍 Aula 1 – Apresentação da Disciplina e Introdução a Sistemas Supervisórios Web  
-**Conteúdos:**
-- Apresentação da disciplina e do projeto final  
-- Revisão de conceitos de sistemas supervisórios (SCADA, IHM, IIoT)  
-- Diferenças entre sistemas supervisórios tradicionais e supervisórios Web  
-- Arquitetura geral do projeto do semestre  
+1. `Node.js` 20 ou superior
+2. `npm`
+3. `Python` 3.10 ou superior
+4. pacote Python `opcua`
 
-**Atividade prática:**
-- Análise de arquiteturas reais de sistemas supervisórios Web  
-- Definição dos grupos e escolha do processo a ser simulado  
+Instalacao do pacote Python:
 
----
+```bash
+pip install opcua
+```
 
-### 📍 Aula 2 – Arquitetura de Aplicações Web para Sistemas em Tempo Real  
-**Conteúdos:**
-- Arquitetura cliente-servidor aplicada à supervisão  
-- REST, WebSockets e comunicação em tempo real  
-- Separação de responsabilidades: front-end, backend e middleware  
-- Boas práticas para aplicações críticas  
+## Passo a passo para rodar
 
-**Atividade prática:**
-- Criação da estrutura inicial do projeto (front + back)  
-- Testes de comunicação em tempo real entre front-end e backend  
+### 1. Clonar o repositorio
 
----
+```bash
+git clone <URL_DO_REPOSITORIO>
+cd ifaci
+```
 
-### 📍 Aula 3 – Backend para Aquisição e Distribuição de Dados Industriais  
-**Conteúdos:**
-- Padrões de API para sistemas supervisórios  
-- Gerenciamento de estados e dados em tempo real  
-- Cache, filas e tratamento de latência  
-- Organização de serviços para alarmes e históricos  
+### 2. Instalar as dependencias do backend
 
-**Atividade prática:**
-- Implementação de uma API básica de dados em tempo real  
-- Simulação de variáveis de processo no backend  
+Na raiz do projeto:
 
----
+```bash
+npm install
+```
 
-### 📍 Aula 4 – Front-end Avançado para Monitoramento em Tempo Real  
-**Conteúdos:**
-- Gerenciamento de estado (Redux, Context, etc.)  
-- Componentização para aplicações industriais  
-- Renderização eficiente de dados em tempo real  
-- Introdução a dashboards industriais  
+### 3. Instalar as dependencias do frontend
 
-**Atividade prática:**
-- Construção de um dashboard Web simples com dados simulados  
+```bash
+cd frontend/my-app
+npm install
+```
 
----
+### 4. Iniciar o servidor OPC UA
 
-## 🔹 MÓDULO 2 – Arquitetura Supervisória e Comunicação Industrial (Aulas 5 a 9)
+Terminal 1:
 
----
+```bash
+cd opcua-server
+python server.py
+```
 
-### 📍 Aula 5 – Arquitetura de Sistemas Supervisórios  
-**Conteúdos:**
-- Componentes de um sistema supervisório  
-- Servidor de dados, clientes, viewers e bancos históricos  
-- Arquiteturas centralizadas vs distribuídas  
-- Introdução ao projeto final  
+### 5. Iniciar o backend
 
-**Atividade prática:**
-- Desenho do diagrama de arquitetura do projeto do grupo  
+Terminal 2, na raiz do projeto:
 
----
+```bash
+npm start
+```
 
-### 📍 Aula 6 – Protocolos Industriais e Comunicação Ethernet  
-**Conteúdos:**
-- Protocolos industriais Ethernet  
-- Conceitos de cliente, servidor e publicador  
-- Introdução ao OPC-UA  
-- Segurança em comunicação industrial  
+### 6. Iniciar a bridge
 
-**Atividade prática:**
-- Configuração de um servidor OPC-UA simulado  
+Terminal 3:
 
----
+```bash
+cd opcua-server
+python bridge.py
+```
 
-### 📍 Aula 7 – OPC-UA na Prática  
-**Conteúdos:**
-- Estrutura de nós, variáveis e métodos  
-- Leitura e escrita de variáveis  
-- Monitoramento de eventos  
-- Boas práticas de modelagem OPC-UA  
+### 7. Iniciar o frontend
 
-**Atividade prática:**
-- Leitura de dados de um servidor OPC-UA via cliente  
+Terminal 4:
 
----
+```bash
+cd frontend/my-app
+npm run dev
+```
 
-### 📍 Aula 8 – Middleware Industrial com Node-RED  
-**Conteúdos:**
-- Conceito de middleware industrial  
-- Arquitetura do Node-RED  
-- Fluxos de aquisição, tratamento e roteamento de dados  
-- Integração OPC-UA + APIs  
+Abra no navegador:
 
-**Atividade prática:**
-- Criação de fluxos Node-RED para aquisição OPC-UA e envio ao backend  
+```text
+http://127.0.0.1:3000
+```
 
----
+## Ordem recomendada
 
-### 📍 Aula 9 – Integração Completa: OPC-UA → Node-RED → Backend  
-**Conteúdos:**
-- Tratamento de dados industriais  
-- Normalização e filtragem  
-- Gerenciamento de falhas de comunicação  
-- Monitoramento da cadeia de dados  
+1. `python opcua-server/server.py`
+2. `npm start`
+3. `python opcua-server/bridge.py`
+4. `cd frontend/my-app && npm run dev`
 
-**Atividade prática:**
-- Pipeline completo funcionando com dados reais ou simulados  
+## Como validar
 
----
+1. Abra `http://127.0.0.1:3000`
+2. Confirme se existe pelo menos `1` dispositivo
+3. Veja se temperatura, pressao e umidade mudam com o tempo
+4. Abra `http://127.0.0.1:8080/health`
+5. Abra `http://127.0.0.1:8080/devices`
 
-## 🔹 MÓDULO 3 – Backend Supervisório: Alarmes, Históricos e Banco de Dados (Aulas 10 a 14)
+## Rotas principais do backend
 
----
+- `GET /health`
+- `GET /devices`
+- `GET /devices/:deviceId`
+- `POST /iot`
+- `POST /devices`
+- `DELETE /destroy`
+- `DELETE /destroy/:deviceId`
 
-### 📍 Aula 10 – Integração com Banco de Dados para Sistemas Supervisórios  
-**Conteúdos:**
-- Modelagem de dados industriais  
-- Tabelas de variáveis, históricos e alarmes  
-- Estratégias de armazenamento em tempo real  
+## Variaveis de ambiente
 
-**Atividade prática:**
-- Criação do banco de dados do projeto  
+### Backend
 
----
+- `PORT`: porta da API. Padrao `8080`
+- `DEVICE_STALE_MS`: timeout para offline. Padrao `10000`
+- `ALLOW_DEVICE_RESET`: habilita limpeza. Padrao `false`
 
-### 📍 Aula 11 – Implementação de Históricos de Processo  
-**Conteúdos:**
-- Conceito de históricos (process historian)  
-- Estratégias de amostragem  
-- Consultas por intervalo de tempo  
+### Frontend
 
-**Atividade prática:**
-- Armazenamento contínuo de variáveis no banco  
+- `NEXT_PUBLIC_API_BASE_URL`: URL da API. Padrao `http://127.0.0.1:8080`
+- `NEXT_PUBLIC_POLL_INTERVAL_MS`: polling da UI. Padrao `2000`
+- `NEXT_PUBLIC_DEVICE_STALE_MS`: timeout visual. Padrao `10000`
+- `NEXT_PUBLIC_ALLOW_DEVICE_RESET`: mostra botao de limpeza. Padrao `false`
 
----
+## Comandos uteis
 
-### 📍 Aula 12 – Alarmística Industrial  
-**Conteúdos:**
-- Conceitos de alarme, evento e condição  
-- Tipos de alarmes e prioridades  
-- Reconhecimento de alarmes  
-- Boas práticas de alarmística  
+Backend:
 
-**Atividade prática:**
-- Implementação de alarmes no backend e Node-RED  
+```bash
+npm start
+```
 
----
+Frontend:
 
-### 📍 Aula 13 – Segurança e Controle de Acesso  
-**Conteúdos:**
-- Autenticação e autorização em sistemas supervisórios  
-- Perfis de operador e supervisor  
-- Logs e auditoria  
+```bash
+cd frontend/my-app
+npm run dev
+npm run build
+npm run lint
+```
 
-**Atividade prática:**
-- Implementação de login e níveis de usuário no projeto  
+Python:
 
----
+```bash
+cd opcua-server
+python server.py
+python bridge.py
+```
 
-### 📍 Aula 14 – Gráficos de Tendência e Visualização Histórica  
-**Conteúdos:**
-- Tipos de gráficos industriais  
-- Performance em visualização de grandes volumes  
-- Filtros e escalas  
+## Problemas comuns
 
-**Atividade prática:**
-- Implementação de tela de históricos com gráficos  
+### Porta 3000 ocupada
 
----
+O Next.js pode subir em outra porta automaticamente.
 
-## 🔹 MÓDULO 4 – Interfaces IHM e Sistemas Supervisórios (Aulas 15 a 20)
+### Porta 8080 ocupada
 
-> Parte final focada especificamente em IHM, conforme solicitado.
+Defina a variavel `PORT` antes de iniciar o backend.
 
----
+### Frontend sem dados
 
-### 📍 Aula 15 – Introdução às Interfaces Homem-Máquina (IHM Industrial)  
-**Conteúdos:**
-- Conceitos de IHM  
-- Diferença entre IHM, SCADA e supervisório Web  
-- Papel do operador e do supervisor  
-- Erros comuns em IHMs  
+Verifique se estes tres servicos estao rodando:
 
-**Atividade prática:**
-- Análise crítica de telas industriais reais  
+1. `python opcua-server/server.py`
+2. `npm start`
+3. `python opcua-server/bridge.py`
 
----
+### Backend online, mas sem dispositivos
 
-### 📍 Aula 16 – IHM de Alta Performance – Norma ISA-101  
-**Conteúdos:**
-- Princípios da ISA-101  
-- Uso correto de cores  
-- Hierarquia de telas  
-- Destaque de alarmes e situações anormais  
+Isso normalmente significa que a `bridge.py` nao conseguiu publicar leituras.
 
-**Atividade prática:**
-- Redesenho conceitual das telas do projeto  
+## Resumo rapido
 
----
+```bash
+# terminal 1
+cd opcua-server
+python server.py
 
-### 📍 Aula 17 – Telas de Operação: Modo Manual e Modo Automático  
-**Conteúdos:**
-- Estados de processo  
-- Intertravamentos e permissivos  
-- Indicação visual de modos de operação  
+# terminal 2
+npm start
 
-**Atividade prática:**
-- Implementação das telas de modo manual e automático  
+# terminal 3
+cd opcua-server
+python bridge.py
 
----
-
-### 📍 Aula 18 – Telas de Alarmes e Diagnóstico  
-**Conteúdos:**
-- Layout de telas de alarmes  
-- Navegação e filtros  
-- Boas práticas de diagnóstico operacional  
-
-**Atividade prática:**
-- Implementação da tela de alarmes no front-end  
-
----
-
-### 📍 Aula 19 – Telas de Históricos, Gráficos e Dashboards Supervisórios  
-**Conteúdos:**
-- Layout de telas de tendência  
-- Dashboards operacionais vs gerenciais  
-- Performance e usabilidade  
-
-**Atividade prática:**
-- Finalização das telas de históricos e dashboards  
-
----
-
-### 📍 Aula 20 – Apresentação Final dos Projetos  
-**Conteúdos:**
-- Demonstração completa dos sistemas  
-- Avaliação técnica e funcional  
-- Feedback final  
-
-**Atividade prática:**
-- Apresentação e entrega final do projeto  
-
----
-
-## 📝 Avaliação da Disciplina
-
-- Projeto final de sistema supervisório Web: **70%**  
-- Entregas parciais e atividades práticas: **20%**  
-- Participação e envolvimento em aula: **10%**  
-
----
-
-## 📚 Bibliografia Básica
-
-- ISA-101 – Human Machine Interfaces for Process Automation Systems  
-- Boyer, S. A. – SCADA: Supervisory Control and Data Acquisition  
-- OPC Foundation – OPC UA Specifications  
-- Documentação oficial do Node-RED  
-
----
-
----
-
+# terminal 4
+cd frontend/my-app
+npm run dev
+```

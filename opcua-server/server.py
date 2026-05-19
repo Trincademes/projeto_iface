@@ -1,55 +1,56 @@
 from opcua import Server
-import time
 import random
+import time
 
-# 1. Criar servidor
+
 server = Server()
-
-# 2. Endpoint
 server.set_endpoint("opc.tcp://0.0.0.0:4840")
 
-# 3. Namespace
 uri = "http://ads.freeopcua.server"
 idx = server.register_namespace(uri)
 
-# 4. Objeto principal
 objects = server.get_objects_node()
 sensor = objects.add_object(idx, "Sensor")
 
-# 5. Variáveis
-temperature = sensor.add_variable(idx, "Temperature", 0.0)
-pressure = sensor.add_variable(idx, "Pressure", 0.0)
-running = sensor.add_variable(idx, "Running", False)
+temperature = sensor.add_variable(idx, "Temperature", 24.0)
+pressure = sensor.add_variable(idx, "Pressure", 1.2)
+running = sensor.add_variable(idx, "Running", True)
+humidity = sensor.add_variable(idx, "Humidity", 55.0)
+safety_lock = sensor.add_variable(idx, "SafetyLock", True)
 
-# 6. Permitir escrita externa
 temperature.set_writable()
 pressure.set_writable()
 running.set_writable()
+humidity.set_writable()
+safety_lock.set_writable()
 
-# 7. Subir servidor
 server.start()
 print("OPC-UA Server rodando em opc.tcp://localhost:4840")
 
 try:
     while True:
-        # Simulação de processo industrial
-        temp_value = temperature.get_value()
-        pres_value = pressure.get_value()
-        run_value = running.get_value()
+        running_value = random.random() > 0.15
+        temperature_value = round(24 + random.uniform(-3, 7), 2)
+        pressure_value = round(1.2 + random.uniform(-0.25, 0.45), 2)
+        humidity_value = round(55 + random.uniform(-12, 12), 2)
+        safety_lock_value = running_value and temperature_value < 29 and pressure_value < 1.55
 
-        temperature.set_value(temp_value)
-        pressure.set_value(pres_value)
-        running.set_value(run_value)
-        
+        temperature.set_value(temperature_value)
+        pressure.set_value(pressure_value)
+        running.set_value(running_value)
+        humidity.set_value(humidity_value)
+        safety_lock.set_value(safety_lock_value)
+
         output = {
-            "Temperatura" : temperature.get_value(),
-            "Pressão" : pressure.get_value(),
-            "Status" : running.get_value(),
+            "Temperatura": temperature.get_value(),
+            "Pressao": pressure.get_value(),
+            "Status": running.get_value(),
+            "Umidade": humidity.get_value(),
+            "TravaSeguranca": safety_lock.get_value(),
         }
 
         print(output)
-
-        time.sleep(1)
+        time.sleep(2)
 
 finally:
     server.stop()
